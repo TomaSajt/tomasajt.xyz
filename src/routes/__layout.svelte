@@ -1,8 +1,5 @@
-<div class="min-h-screen bg-white">
-	<slot />
-</div>
+<slot />
 
-	
 <style lang="postcss">
-	@import "../styles/tailwind.css";
+	@import '../styles/tailwind.css';
 </style>

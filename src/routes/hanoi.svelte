@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Button from '$lib/components/Button.svelte';
+
 	const colors = [
 		'Red',
 		'DodgerBlue',
@@ -92,10 +94,7 @@
 </svelte:head>
 
 <div class="mx-auto my-3 w-full max-w-xs">
-	<form
-		class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-		on:submit|preventDefault={async () => solve()}
-	>
+	<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 		<div class="mb-6">
 			<div class="mb-4">
 				<div class="flex justify-between">
@@ -144,12 +143,7 @@
 			</div>
 		</div>
 		<div class="flex items-center justify-between">
-			<input
-				class="cursor-pointer disabled:cursor-auto bg-blue-500 hover:bg-blue-700 disabled:hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none"
-				type="submit"
-				value="Solve"
-				disabled={running}
-			/>
+			<Button onClick={solve} disabled={running} >Solve</Button>
 		</div>
 	</form>
 </div>
