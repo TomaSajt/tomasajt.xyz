@@ -1,5 +1,11 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
+	import Form from '$lib/components/form/Form.svelte';
+	import LabeledNumber from '$lib/components/form/LabeledNumber.svelte';
+	import LabeledRange from '$lib/components/form/LabeledRange.svelte';
+	import Disk from '$lib/components/hanoi/Disk.svelte';
+	import Rod from '$lib/components/hanoi/Rod.svelte';
+	import RodCollection from '$lib/components/hanoi/RodCollection.svelte';
 
 	const colors = [
 		'Red',
@@ -48,10 +54,6 @@
 			else _from++;
 		}
 	}
-	function getColor(n: number): string {
-		let mod = colors.length;
-		return colors[((n % mod) + mod) % mod];
-	}
 	async function hanoi(n: number, from: number, to: number, using: number): Promise<void> {
 		if (n > 0) {
 			await hanoi(n - 1, from, using, to);
@@ -93,97 +95,39 @@
 	<title>Hanoi | tomasajt.xyz</title>
 </svelte:head>
 
-<div class="mx-auto my-3 w-full max-w-xs">
-	<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-		<div class="mb-6">
-			<div class="mb-4">
-				<div class="flex justify-between">
-					<label for="height">Height</label>
-					<span class="block tracking-wide text-gray-700 text-xs font-bold mb-2">{height}</span>
-				</div>
-				<input
-					class="block w-full"
-					id="height"
-					type="range"
-					min="1"
-					max="20"
-					disabled={running}
-					bind:value={height}
-				/>
-			</div>
-			<div class="mb-4">
-				<div class="flex justify-between">
-					<label for="sleepTime">Sleep Time</label>
-					<span class="block tracking-wide text-gray-700 text-xs font-bold mb-2">{sleepTime}ms</span
-					>
-				</div>
+<Form>
+	<LabeledRange
+		id="height"
+		leftText="Height"
+		bind:value={height}
+		rightText={`${height}`}
+		disabled={running}
+		min={1}
+		max={20}
+	/>
+	<LabeledRange
+		id="sleepTime"
+		leftText="Sleep Time"
+		bind:value={sleepTime}
+		rightText={`${sleepTime}ms`}
+		min={1}
+		max={500}
+	/>
+	<div class="flex gap-6 mb-4">
+		<div class="w-1/3">
+			<LabeledNumber id="from" text="From" disabled={running} min={0} max={2} bind:value={_from} />
+		</div>
+		<div class="w-1/3">
+			<LabeledNumber id="to" text="To" disabled={running} min={0} max={2} bind:value={_to} />
+		</div>
+		<div class="w-1/3">
+			<LabeledNumber id="using" text="Using" disabled min={0} max={2} value={selectedUsing} />
+		</div>
+	</div>
+	<Button onClick={solve} disabled={running}>Solve</Button>
+</Form>
 
-				<input
-					class="block w-full"
-					id="sleepTime"
-					type="range"
-					min="0"
-					max="500"
-					bind:value={sleepTime}
-				/>
-			</div>
-		</div>
-		<div class="flex flex-wrap -mx-3 mb-3">
-			<div class="w-1/3 px-3 mb-4">
-				<label for="from">From</label>
-				<input id="from" type="number" disabled={running} min="0" max="2" bind:value={_from} />
-			</div>
-			<div class="w-1/3 px-3 mb-4">
-				<label for="from">To</label>
-				<input id="from" type="number" disabled={running} min="0" max="2" bind:value={_to} />
-			</div>
-			<div class="w-1/3 px-3 mb-4">
-				<label for="from">Using</label>
-				<input id="from" type="number" disabled min="0" max="2" bind:value={selectedUsing} />
-			</div>
-		</div>
-		<div class="flex items-center justify-between">
-			<Button onClick={solve} disabled={running}>Solve</Button>
-		</div>
-	</form>
-</div>
-
-<div
-	class="m-auto w-[fit-content] max-w-full shadow-md rounded px-12 pt-6 pb-8 mb-4 flex gap-3 bg-gray-400 overflow-x-auto relative"
->
-	{#each rods as stack}
-		<div
-			class="stack flex flex-col-reverse flex-shrink-0 relative"
-			style="width:{36 * height}px;height:{24 * (height + 1)}px"
-		>
-			<div class="absolute top-0 bottom-0 w-2 left-1/2 -translate-x-1/2 bg-gray-800" />
-			{#each stack as val}
-				<div
-					class="mx-auto h-6 flex items-center justify-center z-10 "
-					style="width:{val * 36}px; background-color: {getColor(val)};"
-				>
-					<span class="font-bold ">{val}</span>
-				</div>
-			{/each}
-		</div>
-	{/each}
-	<div class="absolute left-6 right-6 bottom-5 h-3  bg-gray-800" />
-</div>
+<RodCollection {rods} {height} />
 
 <style lang="postcss">
-	input:disabled {
-		@apply opacity-75;
-	}
-	input[type='range'] {
-		@apply cursor-pointer;
-	}
-	input[type='number'] {
-		@apply appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight;
-	}
-	input[type='number']:focus {
-		@apply outline-none bg-white border-gray-500;
-	}
-	label {
-		@apply block tracking-wide text-gray-700 text-xs font-bold uppercase mb-2;
-	}
 </style>
