@@ -143,32 +143,31 @@
 			</div>
 		</div>
 		<div class="flex items-center justify-between">
-			<Button onClick={solve} disabled={running} >Solve</Button>
+			<Button onClick={solve} disabled={running}>Solve</Button>
 		</div>
 	</form>
 </div>
 
 <div
-	class="m-auto w-[fit-content] max-w-full shadow-md rounded px-8 pt-6 pb-8 mb-4 flex gap-3 bg-gray-400 overflow-x-auto"
+	class="m-auto w-[fit-content] max-w-full shadow-md rounded px-12 pt-6 pb-8 mb-4 flex gap-3 bg-gray-400 overflow-x-auto relative"
 >
 	{#each rods as stack}
 		<div
 			class="stack flex flex-col-reverse flex-shrink-0 relative"
 			style="width:{36 * height}px;height:{24 * (height + 1)}px"
 		>
-			<div class="absolute bg-black top-0 bottom-0 w-3 left-1/2 -translate-x-1/2" />
+			<div class="absolute top-0 bottom-0 w-2 left-1/2 -translate-x-1/2 bg-gray-800" />
 			{#each stack as val}
 				<div
-					class="mx-auto h-6 flex items-center justify-center z-10"
-					style="width:{val * 36}px; background-color: {getColor(
-						val
-					)}; box-shadow: inset 0 0 0 1px black;"
+					class="mx-auto h-6 flex items-center justify-center z-10 "
+					style="width:{val * 36}px; background-color: {getColor(val)};"
 				>
 					<span class="font-bold ">{val}</span>
 				</div>
 			{/each}
 		</div>
 	{/each}
+	<div class="absolute left-6 right-6 bottom-5 h-3  bg-gray-800" />
 </div>
 
 <style lang="postcss">
