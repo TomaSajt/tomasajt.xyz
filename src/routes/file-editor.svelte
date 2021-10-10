@@ -105,13 +105,13 @@
 </script>
 
 <div class="p-12 h-screen w-full min-w-[500px] min-h-[500px] flex flex-col">
-	<div class="pb-4">
+	<div class="pb-4 flex-shrink-0 flex-grow-0">
 		<Button onClick={() => newTab()}>New</Button>
 		<Button onClick={() => open().catch()}>Open</Button>
 		<Button onClick={() => save(false).catch()}>Save</Button>
 		<Button onClick={() => save(true).catch()}>Save As</Button>
 	</div>
-	<div class="flex overflow-x-auto" id="tabs">
+	<div class="flex overflow-x-auto flex-shrink-0 flex-grow-0" id="tabs">
 		{#each tabs as tab, i}
 			<span
 				class="inline-block whitespace-nowrap cursor-pointer border-2 px-3 py-1 border-black"
