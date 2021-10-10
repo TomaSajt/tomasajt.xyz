@@ -1,6 +1,5 @@
 <script lang="ts">
-import { tick } from "svelte";
-
+	import { tick } from 'svelte';
 
 	export let value = '';
 	$: rows = value.split('\n').length;
@@ -17,7 +16,7 @@ import { tick } from "svelte";
 	}
 </script>
 
-<div class="flex font-consolas min-h-full h-[fit-content] bg-gray-300">
+<div class="flex font-consolas min-h-full h-[fit-content] w-[fit-content] min-w-full bg-gray-300">
 	<div class="w-[fit-content] min-w-[4em] text-right px-4 pt-5 leading-4 select-none">
 		{#each Array(rows) as _, i}
 			<div>{i}</div>
