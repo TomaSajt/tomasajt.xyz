@@ -4,7 +4,8 @@ module.exports = {
 	darkMode: 'class', // or 'media' or 'class' or true
 	theme: {
 		fontFamily: {
-			opensans: ['Open Sans', 'sans-serif']
+			opensans: ['Open Sans', 'sans-serif'],
+			consolas: ['Consolas', 'monospace']
 		},
 		extend: {}
 	},
