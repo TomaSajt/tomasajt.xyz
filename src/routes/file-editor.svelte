@@ -124,7 +124,7 @@
 		{/each}
 	</div>
 	<div
-		class="overflow-y-auto flex-grow "
+		class="overflow-y-auto flex-grow"
 		on:drop={(ev) => dropHandler(ev).catch()}
 		on:dragover={dragOverHandler}
 	>
