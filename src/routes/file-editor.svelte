@@ -105,6 +105,7 @@
 </script>
 
 <div class="p-12 h-screen w-full min-w-[500px] min-h-[500px] flex flex-col">
+	<div>Editor v0.2.1</div>
 	<div class="pb-4 flex-shrink-0 flex-grow-0">
 		<Button onClick={() => newTab()}>New</Button>
 		<Button onClick={() => open().catch()}>Open</Button>
