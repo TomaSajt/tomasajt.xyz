@@ -26,6 +26,7 @@
 	let _to = 2;
 	$: clampFrom(_from);
 	$: clampTo(_to);
+	$: clampHeight(height);
 	$: avoidCollisionWithFrom(_from);
 	$: avoidCollisionWithTo(_to);
 	$: selectedUsing = theThirdOption(_to, _from);
@@ -41,6 +42,9 @@
 	}
 	function clampTo(_: number) {
 		_to = Math.max(Math.min(2, _to), 0);
+	}
+	function clampHeight(_: number) {
+		height = Math.max(1, height);
 	}
 	function avoidCollisionWithFrom(_: number): void {
 		if (_from == _to) {
