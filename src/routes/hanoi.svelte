@@ -128,7 +128,7 @@
 			<LabeledNumber id="using" text="Using" disabled min={0} max={2} value={selectedUsing} />
 		</div>
 	</div>
-	<Button onClick={solve} disabled={running}>Solve</Button>
+	<Button on:click={solve} disabled={running}>Solve</Button>
 </Form>
 
 <RodCollection {rods} {height} />

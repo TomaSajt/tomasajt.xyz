@@ -1,27 +1,20 @@
 <script lang="ts">
-import Button from "$lib/components/Button.svelte";
-    let video;
-    let speed = 100;
-    $: hundrethSpeed = speed / 100;
+	let playbackRate = 1;
 </script>
+
 <svelte:head>
-    <title>Rick Speed</title>
+	<title>Rickspeed</title>
 </svelte:head>
-    <video controls bind:playbackRate={hundrethSpeed} bind:this={video} loop>
-        <source src="https://marci.hvj.hu/videos/rickroll.mp4">
-        <track kind="captions">
-    </video>
-    <div class="flex w-[min-content] mx-auto items-center flex-wrap">
-        <div>
-            <label for="speed" class="mr-4">{speed}%</label>
-            <input id="speed" type="range" bind:value={speed} min=10 max=400>
-        </div>
-        <div>
-            <Button onClick={()=>{
-                video.preservesPitch = !video.preservesPitch;
-            }}>Preserve pitch</Button>
-        </div>
-    </div>
+<div class="max-w-screen-2xl p-6 mx-auto">
+	<video class="w-full mb-4" bind:playbackRate loop controls>
+		<source src="https://marci.hvj.hu/videos/rickroll.mp4" />
+		<track kind="captions" />
+	</video>
+	<div class="flex items-center gap-4">
+		<input id="speed" type="range" bind:value={playbackRate} min="0.25" max="4" step="0.01" />
+		<label for="speed" class="mr-4">{Math.round(100 * playbackRate)}%</label>
+	</div>
+</div>
+
 <style lang="postcss">
-    
 </style>

@@ -106,10 +106,10 @@
 
 <div class="p-12 h-screen w-full min-w-[500px] min-h-[500px] flex flex-col">
 	<div class="pb-4 flex-shrink-0 flex-grow-0">
-		<Button onClick={() => newTab()}>New</Button>
-		<Button onClick={() => open().catch()}>Open</Button>
-		<Button onClick={() => save(false).catch()}>Save</Button>
-		<Button onClick={() => save(true).catch()}>Save As</Button>
+		<Button on:click={() => newTab()}>New</Button>
+		<Button on:click={() => open().catch()}>Open</Button>
+		<Button on:click={() => save(false).catch()}>Save</Button>
+		<Button on:click={() => save(true).catch()}>Save As</Button>
 	</div>
 	<div class="flex overflow-x-auto flex-shrink-0 flex-grow-0" id="tabs">
 		{#each tabs as tab, i}

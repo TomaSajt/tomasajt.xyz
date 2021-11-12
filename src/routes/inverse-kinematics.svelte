@@ -3,8 +3,6 @@
 
 	import { onMount } from 'svelte';
 
-	//https://www.gamedeveloper.com/programming/3-simple-steps-to-implement-inverse-kinematics
-
 	type Point = { x: number; y: number };
 	let h = 4000;
 	let distances = [50, 50, 100, 70, 50];
@@ -19,7 +17,7 @@
 		}
 		cummulativeAngles.shift();
 	}
-	let beginPos: Point = { x: 0, y: 300 };
+	let beginPos: Point = { x: 0, y: 0 };
 	let nodePositions: Point[] = [];
 	$: {
 		nodePositions = [beginPos];
@@ -79,38 +77,51 @@
 <svelte:head>
 	<title>Inverse Kinematics | tomasajt.xyz</title>
 </svelte:head>
+<div class="h-screen p-4 relative">
+	<div class="absolute top-0">
+		<h1 class="text-3xl font-bold">Inverse Kinematics demo</h1>
+		<p>Drag the blue dot to control the arm</p>
+		<p>
+			Based on the article found <a
+				href="https://www.gamedeveloper.com/programming/3-simple-steps-to-implement-inverse-kinematics"
+				rel="external"
+				class="text-blue-900 underline">here</a
+			>
+		</p>
+		<p>Scroll down to edit parameters</p>
+	</div>
 
-<div
-	class=" mx-auto relative w-0"
-	use:pannable
-	on:panmove={updateTarget}
-	on:panstart={updateTarget}
->
-	{#each nodePositions as pos, i}
-		{#if i < length}
-			<div
-				class="absolute -translate-y-1/2 h-[10px] bg-black"
-				style="
+	<div
+		class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+		use:pannable
+		on:panmove={updateTarget}
+		on:panstart={updateTarget}
+	>
+		{#each nodePositions as pos, i}
+			{#if i < length}
+				<div
+					class="absolute -translate-y-1/2 h-[10px] bg-black"
+					style="
                 width: {distances[i]}px;
                 top: {pos.y}px;
                 left: {pos.x}px;
                 --tw-rotate: {cummulativeAngles[i]}deg;
                 transform-origin: left center"
+				/>
+			{/if}
+			<div
+				class="absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%] w-[20px] h-[20px] bg-red-600"
+				style="top: {pos.y}px; left: {pos.x}px"
 			/>
-		{/if}
+		{/each}
 		<div
-			class="absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%] w-[20px] h-[20px] bg-red-600"
-			style="top: {pos.y}px; left: {pos.x}px"
+			class="absolute z-50 -translate-x-1/2 -translate-y-1/2 rounded-[50%] w-[20px] h-[20px] bg-blue-500"
+			style="top: {target.y}px; left: {target.x}px"
 		/>
-	{/each}
-	<div
-		class="absolute -translate-x-1/2 -translate-y-1/2 rounded-[50%] w-[20px] h-[20px] bg-blue-600"
-		style="top: {target.y}px; left: {target.x}px"
-	/>
+	</div>
 </div>
-<div class="bottom-0 absolute p-4">
-	<h1 class="text-3xl mb-4 font-bold">Inverse Kinematics</h1>
-	<p>Drag the blue dot to control the arm</p>
+
+<div class="p-4">
 	<div class="mb-4">
 		<h2 class="text-2xl mb-4">Angles</h2>
 		{#each Array(length) as _, i}

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import HomeBanner from '$lib/components/HomeBanner.svelte';
-	const links: { text: string; href: string }[] = [
+	const links: { text: string; href: string; wip?: boolean }[] = [
+		{ href: '/file-editor', text: 'File Editor' },
 		{ href: '/hanoi', text: 'Towers of Hanoi' },
+		{ href: '/inverse-kinematics', text: 'Inverse Kinematics' },
+		{ href: '/rickspeed', text: 'Rickspeed'},
 		{ href: '/screen-recursion', text: 'Screen Recursion' },
-		{ href: '/file-editor', text: 'File Editor' }
+		{ href: '/timetable', text: 'Timetable', wip: true }
 	];
 </script>
 
@@ -13,9 +16,14 @@
 
 <HomeBanner />
 <ul class="m-8">
-	{#each links as { text, href }}
+	{#each links as { text, href, wip }}
 		<li class="mb-4">
-			<a class="block w-[fit-content] px-4 py-2 bg-blue-500 text-white font-bold" {href}>{text}</a>
+			<a
+				class="block w-[fit-content] px-4 py-2 text-white font-bold"
+				class:bg-blue-500={!wip}
+				class:bg-orange-500={wip}
+				{href}>{text}{wip ? " (WIP)" : ""}</a
+			>
 		</li>
 	{/each}
 </ul>

@@ -1,20 +1,16 @@
 <script lang="ts">
 	export let disabled = false;
 	export let color: 'blue' | 'green' | 'yellow' | 'red' = 'blue';
-	export let onClick: (
-		this: HTMLButtonElement,
-		event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
-	) => any = () => {};
 </script>
 
 <button
+	on:click
 	class="cursor-pointer text-white font-bold py-2 px-4 rounded focus:outline-none disabled:cursor-auto disabled:opacity-75"
 	class:btn-blue={color === 'blue'}
 	class:btn-green={color === 'green'}
 	class:btn-yellow={color === 'yellow'}
 	class:btn-red={color === 'red'}
 	{disabled}
-	on:click={onClick}
 >
 	<slot />
 </button>
