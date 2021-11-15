@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
-	import NumberedTextArea from '$lib/components/editor/NumberedTextArea.svelte';
+	import NumberedTextArea from '$lib/components/file-editor/NumberedTextArea.svelte';
 
-	import { onMount, tick } from 'svelte';
 
 	interface FileSystemHandle {
 		kind: string;
