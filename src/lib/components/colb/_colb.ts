@@ -6,21 +6,24 @@ type CtorMap<T> =
     T extends BooleanConstructor ? boolean :
     T extends StringConstructor ? string :
     never;
-type TupleCtorMap<T extends [AcceptedTypes] | AcceptedTypes[]> = { [P in keyof T]: CtorMap<T[P]> }
+type TupleCtorMap<T extends TypeList> = { [P in keyof T]: CtorMap<T[P]> }
+type TypeList = [AcceptedTypes] | AcceptedTypes[]
 
-export class InstuctionExecutor {
-    constructor(private readonly _instructionDefinitions: InstuctionDefinition<any>) {
-        
+export class InstuctionExecutor<T extends string = never> {
+    private readonly _instructionDefMap = new Map<T, { types: TypeList, cb: (args: TupleCtorMap<any>) => void }>()
+
+    AddInstructionDef<U extends string>(instrdef: InstuctionDefinition<U, any>) {
+        return this as InstuctionExecutor<T | U>
     }
-}   
-export class InstuctionDefinition<T extends [AcceptedTypes] | AcceptedTypes[]> {
-    constructor(public readonly name: string, public readonly type: T, public readonly cb: (args: TupleCtorMap<T>) => void) {
+}
+export class InstuctionDefinition<S extends string, T extends TypeList> {
+    constructor(public readonly name: S, public readonly type: T, public readonly cb: (args: TupleCtorMap<T>) => void) {
         this.name = name
         this.type = type
         this.cb = cb
     }
 
 }
-new InstuctionDefinition("something", [Number, Number, Boolean, String, Boolean], ([num1,num2,bool1,str1,bool2]) => {
-    console.log(num1, num2, bool1, str1, bool2)
-});
+const addInstrDef = new InstuctionDefinition("add", [Number, Number], ([a, b]) => console.log(a + b));
+const executor = new InstuctionExecutor().AddInstructionDef(addInstrDef)
+executor.instructionDefs
