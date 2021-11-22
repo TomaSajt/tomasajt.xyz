@@ -2,9 +2,9 @@
 	import HomeBanner from '$lib/components/HomeBanner.svelte';
 	const links: { text: string; href: string; wip?: boolean }[] = [
 		{ href: '/file-editor', text: 'File Editor' },
-		{ href: '/hanoi', text: 'Towers of Hanoi' },
+		{ href: '/games/hanoi', text: 'Towers of Hanoi' },
 		{ href: '/inverse-kinematics', text: 'Inverse Kinematics' },
-		{ href: '/rickspeed', text: 'Rickspeed'},
+		{ href: '/rickspeed', text: 'Rickspeed' },
 		{ href: '/screen-recursion', text: 'Screen Recursion' },
 		{ href: '/timetable', text: 'Timetable', wip: true }
 	];
@@ -22,7 +22,7 @@
 				class="block w-[fit-content] px-4 py-2 text-white font-bold"
 				class:bg-blue-500={!wip}
 				class:bg-orange-500={wip}
-				{href}>{text}{wip ? " (WIP)" : ""}</a
+				{href}>{text}{wip ? ' (WIP)' : ''}</a
 			>
 		</li>
 	{/each}
