@@ -1,19 +1,25 @@
-const typeObjects = [Number, BigInt, Boolean, String]
+const typeObjects = [Number, Boolean, String]
 type AcceptedTypes = typeof typeObjects[number]
 type CtorMap<T> =
     T extends NumberConstructor ? number :
-    T extends BigIntConstructor ? bigint :
     T extends BooleanConstructor ? boolean :
     T extends StringConstructor ? string :
     never;
-type TupleCtorMap<T extends TypeList> = { [P in keyof T]: CtorMap<T[P]> }
-type TypeList = [AcceptedTypes] | AcceptedTypes[]
+export type TupleCtorMap<T extends TypeList> = { [P in keyof T]: CtorMap<T[P]> }
+type TupleOf<T> = [T] | T[]
+export type TypeList = TupleOf<AcceptedTypes>
 
-export class InstuctionExecutor<T extends string = never> {
-    private readonly _instructionDefMap = new Map<T, { types: TypeList, cb: (args: TupleCtorMap<any>) => void }>()
+export class Executor<T extends string = never> {
+    private readonly instructionDefMap = new Map<string, InstuctionDefinition<T, any>>()
+    public instructions: {name: T, args: any[]}[] = []
 
     AddInstructionDef<U extends string>(instrdef: InstuctionDefinition<U, any>) {
-        return this as InstuctionExecutor<T | U>
+        const _this = this as Executor<T | U>
+        _this.instructionDefMap.set(instrdef.name, instrdef)
+        return _this;
+    }
+    public GetInstructionDef(name: string): InstuctionDefinition<T, any> {
+        return this.instructionDefMap.get(name)
     }
 }
 export class InstuctionDefinition<S extends string, T extends TypeList> {
@@ -24,6 +30,3 @@ export class InstuctionDefinition<S extends string, T extends TypeList> {
     }
 
 }
-const addInstrDef = new InstuctionDefinition("add", [Number, Number], ([a, b]) => console.log(a + b));
-const executor = new InstuctionExecutor().AddInstructionDef(addInstrDef)
-executor.instructionDefs
