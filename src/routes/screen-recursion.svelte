@@ -22,6 +22,6 @@
 	</video>
 {:else}
 	<div class="m-4 flex gap-4">
-		<Button onClick={start} color="blue">Start</Button>
+		<Button on:click={start} color="blue">Start</Button>
 	</div>
 {/if}
