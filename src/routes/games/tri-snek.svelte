@@ -16,7 +16,7 @@
 	type pos = { x: number; y: number; side: Side };
 	let canvas: HTMLCanvasElement;
 	const size = 50;
-	let speed = 300;
+	let tickSpeed = 200;
 	let d: Dir = Dir.Right;
 	let segments: pos[] = [
 		{ x: 3, y: 0, side: Side.Right },
@@ -32,21 +32,20 @@
 	onMount(start);
 
 	function start() {
-		setTimeout(gameTicker, speed);
+		setTimeout(gameTicker, tickSpeed);
 		requestAnimationFrame(drawLoop);
 	}
 	function gameTicker() {
 		Step();
-		setTimeout(gameTicker, speed);
+		setTimeout(gameTicker, tickSpeed);
 	}
 	function drawLoop() {
 		let ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.translate(0, canvas.height);
 		ctx.scale(1, -1);
 		ctx.transform(1, 0, 0.5, Math.sqrt(3) / 2, 0, 0);
 		ctx.translate(10, 10);
-		ctx.fillStyle = 'white';
-		ctx.fillRect(0, 0, 10 * size, 10 * size);
 		for (let i = 0; i < 10; i++) {
 			for (let j = 0; j < 10; j++) {
 				FillAtPos(ctx, { x: i, y: j, side: Side.Left }, 'gray');
@@ -132,4 +131,3 @@
 	}}
 />
 <canvas bind:this={canvas} width={750} height={500} />
-<button on:click={start}>Start</button>
