@@ -6,8 +6,7 @@
 		{ href: '/inverse-kinematics', text: 'Inverse Kinematics' },
 		{ href: '/rickspeed', text: 'Rickspeed' },
 		{ href: '/screen-recursion', text: 'Screen Recursion' },
-		{ href: '/timetable', text: 'Timetable', wip: true },
-		{ href: '/tri-snek', text: 'Tri-Snek', wip: true }
+		{ href: '/games/tri-snek', text: 'Tri-Snek', wip: true }
 	];
 </script>
 
