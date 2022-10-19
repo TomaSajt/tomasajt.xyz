@@ -4,32 +4,28 @@
     let inited = false;
     function onClickSquare(i: number) {
         if (fixed[i]) return;
-        let x = i % 9;
-        let y = (i / 9) | 0;
-        console.log(`${x} ${y}`);
-        board[i]++;
-        board[i] %= 10;
     }
     onMount(() => {
-        init();
+        init(100);
         inited = true;
     });
 </script>
-
+<h1 class="my-10 text-5xl font-mono text-center">Sudoku</h1>
 {#if inited}
     <div class="max-w-2xl mx-auto">
-        <div class="mt-10 w-4/5 mx-auto select-none relative">
+        <div class="w-4/5 mx-auto select-none relative">
             <div class="grid grid-cols-9 inset-0">
                 {#each Array(81) as _, i}
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
-                        class="aspect-square grid place-items-center bg-red-300 border border-slate-900"
-                        class:bg-red-600={fixed[i]}
+                        class="aspect-square grid place-items-center border border-slate-900"
+                        class:bg-blue-300={fixed[i]}
+                        class:bg-blue-50={!fixed[i]}
+                        class:hover:bg-blue-100={!fixed[i]}
                         class:hover:cursor-pointer={!fixed[i]}
-                        class:hover:bg-red-400={!fixed[i]}
                         on:click={() => onClickSquare(i)}
                     >
-                        {board[i]}
+                        {board[i] == 0 ? "" : `${board[i]}`}
                     </div>
                 {/each}
             </div>
