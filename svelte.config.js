@@ -3,13 +3,11 @@ import preprocess from "svelte-preprocess";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-    preprocess: [
-        preprocess({
-            postcss: {
-				configFilePath: './postcss.config.cjs'
-			}
-        }),
-    ],
+    preprocess: preprocess({
+        postcss: {
+            configFilePath: "./postcss.config.cjs",
+        },
+    }),
 
     kit: {
         adapter: adapter(),
