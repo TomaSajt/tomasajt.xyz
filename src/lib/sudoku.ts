@@ -14,78 +14,22 @@ export function makeBoard(maxEmptyCount: number) {
     shuffle(0, 3, swapBRowChunks)
     shuffle(0, 3, swapBColChunks)
     substituteBRandomly()
-    if (checkSolvable() != 1) throw "The full board is supposed to have a unique solution"
-    sparsen(maxEmptyCount);
+    if (checkSolvable(board) != 1) throw "The full board is supposed to have a unique solution"
+    sparsenB(maxEmptyCount);
     return board;
 
-    function sparsen(maxRemovalCount: number) {
+    function sparsenB(maxRemovalCount: number) {
         let order = randPerm(81);
         let c = 0;
         for (let i of order) {
+            if (c >= maxRemovalCount) break;
             let val = board[i];
             board[i] = 0;
-            if (checkSolvable() == 2) board[i] = val;
+            if (checkSolvable(board) == 2) board[i] = val;
             else c++
-            if (c >= maxRemovalCount) break;
         }
     }
 
-    function checkSolvable(): number {
-        let colU = Array(9).fill(0).map(() => new Set<number>());
-        let rowU = Array(9).fill(0).map(() => new Set<number>());
-        let aidU = Array(9).fill(0).map(() => new Set<number>());
-        for (let i = 0; i < 81; i++) {
-            let val = board[i]
-            let { x, y, aid } = getPosInfo(i);
-            if (val != 0) {
-                if (aidU[aid].has(val)) return 0;
-                if (colU[x].has(val)) return 0;
-                if (rowU[y].has(val)) return 0;
-                aidU[aid].add(val);
-                colU[x].add(val);
-                rowU[y].add(val);
-            }
-        }
-        return backtrack(0);
-        function backtrack(i: number): number {
-            if (i == 81) return 1;
-            let val = board[i]
-            if (val != 0) return backtrack(i + 1);
-            let { x, y, aid } = getPosInfo(i);
-            aidU[aid].add(val);
-            colU[x].add(val);
-            rowU[y].add(val);
-            let cnt = 0;
-            for (let j = 1; j <= 9; j++) {
-                if (aidU[aid].has(j) || colU[x].has(j) || rowU[y].has(j)) continue;
-                board[i] = j;
-                let r = backtrack(i + 1);
-                cnt += r;
-                board[i] = 0;
-                if (cnt >= 2) {
-                    cnt = 2;
-                    break;
-                }
-            }
-            aidU[aid].delete(val);
-            colU[x].delete(val);
-            rowU[y].delete(val);
-            return cnt;
-        }
-    }
-
-
-    function getPosInfo(i: number) {
-        let x = i % 9
-        let y = (i / 9) | 0
-        let cc = (x / 3) | 0
-        let rc = (y / 3) | 0
-        return { x, y, aid: rc * 3 + cc };
-    }
-
-    function swap<T>(arr: T[], i: number, j: number) {
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
     function swapB(i: number, j: number) {
         swap(board, i, j);
     }
@@ -123,22 +67,77 @@ export function makeBoard(maxEmptyCount: number) {
         }
     }
 
-    function randPerm(n: number): number[] {
-        let arr = Array(n).fill(0);
-        for (let i = 0; i < n; i++) arr[i] = i;
-        shuffle(0, n, (i, j) => swap(arr, i, j))
-        return arr;
-    }
-    function shuffle(l: number, r: number, swapEls: (i: number, j: number) => any) {
-        let n = r - l;
-        for (let i = n - 1; i > 0; i--) {
-            let j = (Math.random() * (i + 1)) | 0;
-            swapEls(l + i, l + j);
-        }
+}
+
+function swap<T>(arr: T[], i: number, j: number) {
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+}
+
+function randPerm(n: number): number[] {
+    let arr = Array(n).fill(0);
+    for (let i = 0; i < n; i++) arr[i] = i;
+    shuffle(0, n, (i, j) => swap(arr, i, j))
+    return arr;
+}
+function shuffle(l: number, r: number, swapEls: (i: number, j: number) => any) {
+    let n = r - l;
+    for (let i = n - 1; i > 0; i--) {
+        let j = (Math.random() * (i + 1)) | 0;
+        swapEls(l + i, l + j);
     }
 }
 
+export function getPosInfo(i: number) {
+    let x = i % 9
+    let y = (i / 9) | 0
+    let cc = (x / 3) | 0
+    let rc = (y / 3) | 0
+    return { x, y, aid: rc * 3 + cc };
+}
 
+export function checkSolvable(board: number[]): number {
+    let colU = Array(9).fill(0).map(() => new Set<number>());
+    let rowU = Array(9).fill(0).map(() => new Set<number>());
+    let aidU = Array(9).fill(0).map(() => new Set<number>());
+    for (let i = 0; i < 81; i++) {
+        let val = board[i]
+        let { x, y, aid } = getPosInfo(i);
+        if (val != 0) {
+            if (aidU[aid].has(val)) return 0;
+            if (colU[x].has(val)) return 0;
+            if (rowU[y].has(val)) return 0;
+            aidU[aid].add(val);
+            colU[x].add(val);
+            rowU[y].add(val);
+        }
+    }
+    return backtrack(0);
+    function backtrack(i: number): number {
+        if (i == 81) return 1;
+        let val = board[i]
+        if (val != 0) return backtrack(i + 1);
+        let { x, y, aid } = getPosInfo(i);
+        aidU[aid].add(val);
+        colU[x].add(val);
+        rowU[y].add(val);
+        let cnt = 0;
+        for (let j = 1; j <= 9; j++) {
+            if (aidU[aid].has(j) || colU[x].has(j) || rowU[y].has(j)) continue;
+            board[i] = j;
+            let r = backtrack(i + 1);
+            cnt += r;
+            board[i] = 0;
+            if (cnt >= 2) {
+                cnt = 2;
+                break;
+            }
+        }
+        aidU[aid].delete(val);
+        colU[x].delete(val);
+        rowU[y].delete(val);
+        return cnt;
+    }
+}
 
 
 
