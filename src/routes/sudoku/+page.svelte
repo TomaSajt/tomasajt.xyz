@@ -4,7 +4,7 @@
     let styleStates: StyleState[];
     let interest: boolean[];
     let conflict: boolean[];
-    import { checkSolvable, makeBoard, getPosInfo } from "$lib/sudoku";
+    import { checkSolvable, makeBoard, getPosInfo } from "./sudoku";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
     let inited = false;
