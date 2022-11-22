@@ -51,14 +51,32 @@ type WeatherInfo = {
     cod: number
 }
 
+type IpInfo = {
+    status: string,
+    country: string,
+    countryCode: string,
+    region: string,
+    regionName: string,
+    city: string,
+    zip: string,
+    lat: number,
+    lon: number,
+    timezone: string,
+    isp: string,
+    org: string,
+    as: string,
+    query: string
+}
+
 export const load: PageServerLoad = async ({ params, getClientAddress }) => {
-    const lat = '47.497913'
-    const lon = '19.040236'
+    const url0 = `http://ip-api.com/json/${getClientAddress()}`
+    const ipinfo = await fetch(url0).then(r => r.json()) as IpInfo
+    const lat = ipinfo.lat ?? '47.497913'
+    const lon = ipinfo.lon ?? '19.040236'
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`
     const weatherInfo = await fetch(url).then(r => r.json()) as WeatherInfo;
 
     return {
-        weatherInfo: weatherInfo,
-        xd: getClientAddress()
+        weatherInfo: weatherInfo
     }
 }
