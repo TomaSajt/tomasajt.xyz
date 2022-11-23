@@ -24,7 +24,7 @@
     <div>Minimum hőmérséklet: {weatherInfo.main.temp_min} °C</div>
     <div>Maximum hőmérséklet: {weatherInfo.main.temp_max} °C</div>
     <div>Páratartalom: {weatherInfo.main.humidity}%</div>
-    <div>Eső az elmúlt órában: {weatherInfo.rain["1h"]} mm</div>
+    <div>Eső az elmúlt órában: {weatherInfo.rain?.["1h"]} mm</div>
     <div>Felhősség: {weatherInfo.clouds.all}%</div>
     <div>Légnyomás: {weatherInfo.main.pressure / 10} kPa</div>
     <div class="flex py-4 gap-4">

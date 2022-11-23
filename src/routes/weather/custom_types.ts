@@ -20,10 +20,11 @@ export type WeatherInfo = {
     wind: {
         speed: number
         deg: number
-        gust: number
+        gust?: number
     },
-    rain: {
-        "1h": number
+    rain?: {
+        "1h"?: number
+        "3h"?: number
     },
     clouds: {
         all: number
