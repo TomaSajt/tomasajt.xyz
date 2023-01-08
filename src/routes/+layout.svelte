@@ -1,5 +1,5 @@
-<script>
-    import "$lib/style/app.pcss";
+<script lang="ts">
+    import "../app.pcss";
 </script>
 
 <slot />
