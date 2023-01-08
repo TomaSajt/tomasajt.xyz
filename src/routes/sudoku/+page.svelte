@@ -4,7 +4,7 @@
     let styleStates: StyleState[];
     let interest: boolean[];
     let conflict: boolean[];
-    import { checkSolvable, makeBoard, getPosInfo } from "./sudoku";
+    import { newStartingBoard } from "./sudoku";
     import { fade } from "svelte/transition";
     import { onMount } from "svelte";
     let inited = false;
@@ -25,7 +25,7 @@
     function restart() {
         solved = false;
         selectedInd = -1;
-        board = makeBoard(30);
+        board = newStartingBoard(30)[1].flat();
         fixed = Array(81).fill(true);
         for (let i = 0; i < 81; i++) {
             if (board[i] == 0) fixed[i] = false;
@@ -33,7 +33,9 @@
         checkDone();
         updateCellStyles();
     }
+
     function updateCellStyles() {
+        /*
         // 0 - fixed, 1 - interactable, 2 - selected, 3 - solved
         styleStates = Array(81).fill(0);
         interest = Array(81).fill(false);
@@ -58,6 +60,7 @@
                 board[selectedInd] != 0 &&
                 board[selectedInd] == board[i];
         }
+        */
     }
 
     enum StyleState {
@@ -88,10 +91,11 @@
     }
 
     function checkDone() {
+        /*
         let c = board.filter((x) => x != 0).length;
         if (c == 81 && checkSolvable(board) == 1) {
             solved = true;
-        }
+        }*/
     }
 </script>
 
@@ -104,22 +108,6 @@
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
                         class="aspect-square grid place-items-center border filter border-slate-900"
-                        class:bg-blue-300={styleStates[i] == StyleState.Fixed}
-                        class:bg-blue-200={styleStates[i] == StyleState.Normal}
-                        class:hover:bg-blue-100={styleStates[i] ==
-                            StyleState.Normal}
-                        class:bg-blue-500={styleStates[i] ==
-                            StyleState.Selected}
-                        class:hover:bg-blue-400={styleStates[i] ==
-                            StyleState.Selected}
-                        class:hover:cursor-pointer={styleStates[i] ==
-                            StyleState.Normal ||
-                            styleStates[i] == StyleState.Selected}
-                        class:bg-green-200={styleStates[i] == StyleState.Solved}
-                        class:hue-rotate-30={interest[i] && !conflict[i]}
-                        class:saturate-200={interest[i] && !conflict[i]}
-                        class:hue-rotate-[120deg]={conflict[i]}
-                        class:saturate-75={conflict[i]}
                         on:click={() => onClickSquare(i)}
                     >
                         {board[i] == 0 ? "" : `${board[i]}`}

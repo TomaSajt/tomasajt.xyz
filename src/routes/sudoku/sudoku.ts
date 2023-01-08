@@ -1,143 +1,240 @@
+const BLANK_BOARD = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
-export function makeBoard(maxEmptyCount: number) {
-    const board = Array(81).fill(0);
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            let rc = i / 3 | 0;
-            let ind = i * 9 + j;
-            let val = (i * 3 + j + rc) % 9 + 1;
-            board[ind] = val;
-        }
-    }
-    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBRows)
-    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBCols)
-    shuffle(0, 3, swapBRowChunks)
-    shuffle(0, 3, swapBColChunks)
-    substituteBRandomly()
-    if (checkSolvable(board) != 1) throw "The full board is supposed to have a unique solution"
-    sparsenB(maxEmptyCount);
-    return board;
+let counter = 0
+const numArray = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    function sparsenB(maxRemovalCount: number) {
-        let order = randPerm(81);
-        let c = 0;
-        for (let i of order) {
-            if (c >= maxRemovalCount) break;
-            let val = board[i];
-            board[i] = 0;
-            if (checkSolvable(board) == 2) board[i] = val;
-            else c++
-        }
+function shuffle<T>(array: T[]) {
+    let newArray = [...array]
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
+    return newArray;
+}
 
-    function swapB(i: number, j: number) {
-        swap(board, i, j);
-    }
-    function swapBRows(r1: number, r2: number) {
-        for (let i = 0; i < 9; i++) swapB(9 * r1 + i, 9 * r2 + i)
-    }
-    function swapBCols(c1: number, c2: number) {
-        for (let i = 0; i < 9; i++) swapB(9 * i + c1, 9 * i + c2)
-    }
-    function swapBRowChunks(rc1: number, rc2: number) {
-        let root1 = rc1 * 27;
-        let root2 = rc2 * 27;
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 3; j++) {
-                let offset = 9 * j + i;
-                swapB(root1 + offset, root2 + offset)
+
+/*--------------------------------------------------------------------------------------------
+--------------------------------- Check if Location Safe -------------------------------------
+--------------------------------------------------------------------------------------------*/
+
+const rowSafe = (puzzleArray: number[][], emptyCell: EmptyCell, num: number) => {
+    // -1 is return value of .find() if value not found
+    return puzzleArray[emptyCell.rowIndex].indexOf(num) == -1
+}
+const colSafe = (puzzleArray: number[][], emptyCell: EmptyCell, num: number) => {
+    return !puzzleArray.some(row => row[emptyCell.colIndex] == num)
+}
+
+const boxSafe = (puzzleArray: number[][], emptyCell: EmptyCell, num: number) => {
+    let boxStartRow = emptyCell.rowIndex - (emptyCell.rowIndex % 3) // Define top left corner of box region for empty cell
+    let boxStartCol = emptyCell.colIndex - (emptyCell.colIndex % 3)
+    let safe = true
+
+    for (let boxRow of [0, 1, 2]) {  // Each box region has 3 rows
+        for (let boxCol of [0, 1, 2]) { // Each box region has 3 columns
+            if (puzzleArray[boxStartRow + boxRow][boxStartCol + boxCol] == num) { // Num is present in box region?
+                safe = false // If number is found, it is not safe to place
             }
         }
     }
-    function swapBColChunks(cc1: number, cc2: number) {
-        let root1 = cc1 * 3;
-        let root2 = cc2 * 3;
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 3; j++) {
-                let offset = 9 * i + j;
-                swapB(root1 + offset, root2 + offset)
-            }
+    return safe
+}
+
+const safeToPlace = (puzzleArray: number[][], emptyCell: EmptyCell, num: number) => {
+    return rowSafe(puzzleArray, emptyCell, num) &&
+        colSafe(puzzleArray, emptyCell, num) &&
+        boxSafe(puzzleArray, emptyCell, num)
+}
+
+/*--------------------------------------------------------------------------------------------
+--------------------------------- Obtain Next Empty Cell -------------------------------------
+--------------------------------------------------------------------------------------------*/
+
+const nextEmptyCell = (puzzleArray: number[][]) => {
+    const emptyCell = { rowIndex: -1, colIndex: -1 }
+
+    puzzleArray.forEach((row, rowIndex) => {
+        if (emptyCell.colIndex !== -1) return // If this key has already been assigned, skip iteration
+        let firstZero = row.find(col => col === 0) // find first zero-element
+        if (firstZero === undefined) return; // if no zero present, skip to next row
+        emptyCell.rowIndex = rowIndex
+        emptyCell.colIndex = row.indexOf(firstZero)
+    })
+
+    if (emptyCell.colIndex !== -1) return emptyCell
+    // If emptyCell was never assigned, there are no more zeros
+    return false
+}
+
+/*--------------------------------------------------------------------------------------------
+--------------------------------- Generate Filled Board -------------------------------------
+--------------------------------------------------------------------------------------------*/
+
+const fillPuzzle = (startingBoard: number[][]) => {
+    const emptyCell = nextEmptyCell(startingBoard)
+    // If there are no more zeros, the board is finished, return it
+    if (!emptyCell) return startingBoard
+
+    // Shuffled [0 - 9 ] array fills board randomly each pass
+    for (let num of shuffle(numArray)) {
+        // counter is a global variable tracking the number of iterations performed in generating a puzzle
+        // Most puzzles generate in < 500ms, but occassionally random generation could run in to
+        // heavy backtracking and result in a long wait. Best to abort this attempt and restart.
+        // 20_000_000 iteration maximum is approximately 1.3 sec runtime.
+        // See initializer function for more
+        counter++
+        if (counter > 20_000_000) throw new Error("Recursion Timeout")
+        if (safeToPlace(startingBoard, emptyCell, num)) {
+            startingBoard[emptyCell.rowIndex][emptyCell.colIndex] = num // If safe to place number, place it
+            // Recursively call the fill function to place num in next empty cell
+            if (fillPuzzle(startingBoard)) return startingBoard
+            // If we were unable to place the future num, that num was wrong. Reset it and try next value
+            startingBoard[emptyCell.rowIndex][emptyCell.colIndex] = 0
         }
     }
+    return false // If unable to place any number, return false, which triggers previous round to go to next num
+}
 
-    function substituteBRandomly() {
-        let map = randPerm(9);
-        for (let i = 0; i < 81; i++) {
-            board[i] = map[board[i] - 1] + 1;
+const newSolvedBoard = () => {
+    const newBoard = BLANK_BOARD.map(row => row.slice()) // Create an unaffiliated clone of a fresh board
+    fillPuzzle(newBoard) // Populate the board using backtracking algorithm
+    return newBoard
+}
+
+/*--------------------------------------------------------------------------------------------
+--------------------------------- Generate Playable Board ------------------------------------
+--------------------------------------------------------------------------------------------*/
+
+const pokeHoles = (startingBoard: number[][], holes: number): [Cell[], number[][]] => {
+    const removedVals: Cell[] = []
+
+    while (removedVals.length < holes) {
+        const val = Math.floor(Math.random() * 81) // Value between 0-81
+        const randomRowIndex = Math.floor(val / 9) // Integer 0-8 for row index
+        const randomColIndex = val % 9
+
+        if (!startingBoard[randomRowIndex]) continue // guard against cloning error
+        if (startingBoard[randomRowIndex][randomColIndex] == 0) continue // If cell already empty, restart loop
+
+        removedVals.push({  // Store the current value at the coordinates
+            rowIndex: randomRowIndex,
+            colIndex: randomColIndex,
+            val: startingBoard[randomRowIndex][randomColIndex]
+        })
+        startingBoard[randomRowIndex][randomColIndex] = 0 // "poke a hole" in the board at the coords
+        const proposedBoard = startingBoard.map(row => row.slice()) // Clone this changed board
+
+        // Attempt to solve the board after removing value. If it cannot be solved, restore the old value.
+        // and remove that option from the list
+        if (multiplePossibleSolutions(proposedBoard)) {
+            startingBoard[randomRowIndex][randomColIndex] = removedVals.pop()!.val
         }
     }
-
+    return [removedVals, startingBoard]
 }
 
-function swap<T>(arr: T[], i: number, j: number) {
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-}
+/*--------------------------------------------------------------------------------------------
+--------------------------------- Initialize -------------------------------------
+--------------------------------------------------------------------------------------------*/
 
-function randPerm(n: number): number[] {
-    let arr = Array(n).fill(0);
-    for (let i = 0; i < n; i++) arr[i] = i;
-    shuffle(0, n, (i, j) => swap(arr, i, j))
-    return arr;
-}
-function shuffle(l: number, r: number, swapEls: (i: number, j: number) => any) {
-    let n = r - l;
-    for (let i = n - 1; i > 0; i--) {
-        let j = (Math.random() * (i + 1)) | 0;
-        swapEls(l + i, l + j);
+export function newStartingBoard(holes: number): [Cell[], number[][], number[][]] {
+    // Reset global iteration counter to 0 and Try to generate a new game. 
+    // If counter reaches its maximum limit in the fillPuzzle function, current attemp will abort
+    // To prevent the abort from crashing the script, the error is caught and used to re-run
+    // this function
+    try {
+        counter = 0
+        let solvedBoard = newSolvedBoard()
+
+        // Clone the populated board and poke holes in it. 
+        // Stored the removed values for clues
+        let [removedVals, startingBoard] = pokeHoles(solvedBoard.map(row => row.slice()), holes)
+
+        return [removedVals, startingBoard, solvedBoard]
+
+    } catch (error) {
+        return newStartingBoard(holes)
     }
 }
 
-export function getPosInfo(i: number) {
-    let x = i % 9
-    let y = (i / 9) | 0
-    let cc = (x / 3) | 0
-    let rc = (y / 3) | 0
-    return { x, y, aid: rc * 3 + cc };
+// The board will be completely solved once for each item in the empty cell list.
+// The empty cell array is rotated on each iteration, so that the order of the empty cells
+// And thus the order of solving the game, is different each time.
+// The solution for each attempt is pushed to a possibleSolutions array as a string
+// Multiple solutions are identified by taking a unique Set from the possible solutions
+// and measuring its length. If multiple possible solutions are found at any point
+// If will return true, prompting the pokeHoles function to select a new value for removal.
+
+function multiplePossibleSolutions(boardToCheck: number[][]) {
+    const possibleSolutions = []
+    const emptyCellArray = emptyCellCoords(boardToCheck)
+    for (let index = 0; index < emptyCellArray.length; index++) {
+        console.log("pog")
+        // Rotate a clone of the emptyCellArray by one for each iteration
+        let emptyCellClone = [...emptyCellArray]
+        const startingPoint = emptyCellClone.splice(index, 1);
+        emptyCellClone.unshift(startingPoint[0])
+        let thisSolution = fillFromArray(boardToCheck.map(row => row.slice()), emptyCellClone)
+        possibleSolutions.push(thisSolution.join())
+        if (Array.from(new Set(possibleSolutions)).length > 1) return true
+    }
+    return false
 }
 
-export function checkSolvable(board: number[]): number {
-    let colU = Array(9).fill(0).map(() => new Set<number>());
-    let rowU = Array(9).fill(0).map(() => new Set<number>());
-    let aidU = Array(9).fill(0).map(() => new Set<number>());
-    for (let i = 0; i < 81; i++) {
-        let val = board[i]
-        let { x, y, aid } = getPosInfo(i);
-        if (val != 0) {
-            if (aidU[aid].has(val)) return 0;
-            if (colU[x].has(val)) return 0;
-            if (rowU[y].has(val)) return 0;
-            aidU[aid].add(val);
-            colU[x].add(val);
-            rowU[y].add(val);
+// This will attempt to solve the puzzle by placing values into the board in the order that
+// the empty cells list presents
+function fillFromArray(startingBoard: number[][], emptyCellArray: EmptyCell[]) {
+    const emptyCell = nextStillEmptyCell(startingBoard, emptyCellArray)
+    if (emptyCell === null) return startingBoard
+    let pokeCounter = 0
+    for (let num of shuffle(numArray)) {
+        pokeCounter++
+        if (pokeCounter > 60_000_000) break;
+        if (safeToPlace(startingBoard, emptyCell, num)) {
+            startingBoard[emptyCell.rowIndex][emptyCell.colIndex] = num
+            if (fillFromArray(startingBoard, emptyCellArray)) return startingBoard
+            startingBoard[emptyCell.rowIndex][emptyCell.colIndex] = 0
         }
     }
-    return backtrack(0);
-    function backtrack(i: number): number {
-        if (i == 81) return 1;
-        let val = board[i]
-        if (val != 0) return backtrack(i + 1);
-        let { x, y, aid } = getPosInfo(i);
-        aidU[aid].add(val);
-        colU[x].add(val);
-        rowU[y].add(val);
-        let cnt = 0;
-        for (let j = 1; j <= 9; j++) {
-            if (aidU[aid].has(j) || colU[x].has(j) || rowU[y].has(j)) continue;
-            board[i] = j;
-            let r = backtrack(i + 1);
-            cnt += r;
-            board[i] = 0;
-            if (cnt >= 2) {
-                cnt = 2;
-                break;
-            }
-        }
-        aidU[aid].delete(val);
-        colU[x].delete(val);
-        rowU[y].delete(val);
-        return cnt;
+    throw new Error("Poke Timeout")
+}
+
+// As numbers get placed, not all of the initial cells are still empty.
+// This will find the next still empty cell in the list
+function nextStillEmptyCell(startingBoard: number[][], emptyCellArray: EmptyCell[]) {
+    for (let coords of emptyCellArray) {
+        if (startingBoard[coords.rowIndex][coords.colIndex] === 0) return coords
     }
+    return null
+}
+
+// Generate array from range, inclusive of start & endbounds.
+const range = (start: number, end: number) => {
+    const length = end - start + 1
+    return Array.from({ length }, (_, i) => start + i)
+}
+
+// Get a list of all empty cells in the board from top-left to bottom-right
+function emptyCellCoords(startingBoard: number[][]): EmptyCell[] {
+    const listOfEmptyCells = []
+    for (const row of range(0, 8)) {
+        for (const col of range(0, 8)) {
+            if (startingBoard[row][col] === 0) listOfEmptyCells.push({ rowIndex: row, colIndex: col })
+        }
+    }
+    return listOfEmptyCells
 }
 
 
-
+type EmptyCell = { rowIndex: number, colIndex: number }
+type Cell = EmptyCell & { val: number }
