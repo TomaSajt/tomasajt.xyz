@@ -9,12 +9,12 @@ export function makeBoard(maxEmptyCount: number) {
             board[ind] = val;
         }
     }
-    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBRows)
-    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBCols)
-    shuffle(0, 3, swapBRowChunks)
-    shuffle(0, 3, swapBColChunks)
-    substituteBRandomly()
-    if (checkSolvable(board) != 1) throw "The full board is supposed to have a unique solution"
+    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBRows);
+    for (let i = 0; i < 9; i += 3) shuffle(i, i + 3, swapBCols);
+    shuffle(0, 3, swapBRowChunks);
+    shuffle(0, 3, swapBColChunks);
+    substituteBRandomly();
+    if (checkSolvable(board) != 1) throw "The full board is supposed to have a unique solution";
     sparsenB(maxEmptyCount);
     return board;
 
@@ -26,7 +26,7 @@ export function makeBoard(maxEmptyCount: number) {
             let val = board[i];
             board[i] = 0;
             if (checkSolvable(board) == 2) board[i] = val;
-            else c++
+            else c++;
         }
     }
 
@@ -34,10 +34,10 @@ export function makeBoard(maxEmptyCount: number) {
         swap(board, i, j);
     }
     function swapBRows(r1: number, r2: number) {
-        for (let i = 0; i < 9; i++) swapB(9 * r1 + i, 9 * r2 + i)
+        for (let i = 0; i < 9; i++) swapB(9 * r1 + i, 9 * r2 + i);
     }
     function swapBCols(c1: number, c2: number) {
-        for (let i = 0; i < 9; i++) swapB(9 * i + c1, 9 * i + c2)
+        for (let i = 0; i < 9; i++) swapB(9 * i + c1, 9 * i + c2);
     }
     function swapBRowChunks(rc1: number, rc2: number) {
         let root1 = rc1 * 27;
@@ -45,7 +45,7 @@ export function makeBoard(maxEmptyCount: number) {
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 3; j++) {
                 let offset = 9 * j + i;
-                swapB(root1 + offset, root2 + offset)
+                swapB(root1 + offset, root2 + offset);
             }
         }
     }
@@ -55,7 +55,7 @@ export function makeBoard(maxEmptyCount: number) {
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 3; j++) {
                 let offset = 9 * i + j;
-                swapB(root1 + offset, root2 + offset)
+                swapB(root1 + offset, root2 + offset);
             }
         }
     }
@@ -76,7 +76,7 @@ function swap<T>(arr: T[], i: number, j: number) {
 function randPerm(n: number): number[] {
     let arr = Array(n).fill(0);
     for (let i = 0; i < n; i++) arr[i] = i;
-    shuffle(0, n, (i, j) => swap(arr, i, j))
+    shuffle(0, n, (i, j) => swap(arr, i, j));
     return arr;
 }
 function shuffle(l: number, r: number, swapEls: (i: number, j: number) => any) {
@@ -88,10 +88,10 @@ function shuffle(l: number, r: number, swapEls: (i: number, j: number) => any) {
 }
 
 export function getPosInfo(i: number) {
-    let x = i % 9
-    let y = (i / 9) | 0
-    let cc = (x / 3) | 0
-    let rc = (y / 3) | 0
+    let x = i % 9;
+    let y = (i / 9) | 0;
+    let cc = (x / 3) | 0;
+    let rc = (y / 3) | 0;
     return { x, y, aid: rc * 3 + cc };
 }
 
@@ -100,7 +100,7 @@ export function checkSolvable(board: number[]): number {
     let rowU = Array(9).fill(0).map(() => new Set<number>());
     let aidU = Array(9).fill(0).map(() => new Set<number>());
     for (let i = 0; i < 81; i++) {
-        let val = board[i]
+        let val = board[i];
         let { x, y, aid } = getPosInfo(i);
         if (val != 0) {
             if (aidU[aid].has(val)) return 0;
@@ -114,7 +114,7 @@ export function checkSolvable(board: number[]): number {
     return backtrack(0);
     function backtrack(i: number): number {
         if (i == 81) return 1;
-        let val = board[i]
+        let val = board[i];
         if (val != 0) return backtrack(i + 1);
         let { x, y, aid } = getPosInfo(i);
         aidU[aid].add(val);
