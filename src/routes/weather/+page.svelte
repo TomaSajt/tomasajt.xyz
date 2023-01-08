@@ -1,6 +1,4 @@
 <script lang="ts">
-    import Fa from "svelte-fa";
-    import { faArrowDownLong } from "@fortawesome/free-solid-svg-icons";
     import type { PageData } from "./$types";
     export let data: PageData;
     let weatherInfo = data.weatherInfo;
@@ -29,8 +27,12 @@
     <div>Légnyomás: {weatherInfo.main.pressure / 10} kPa</div>
     <div class="flex py-4 gap-4">
         {#each weatherInfo.weather as w}
-            <div class="p-4 border border-black w-100 rounded-lg bg-slate-400 w-60">
-                <div class="text-2xl text-center">{capitalize(w.description)}</div>
+            <div
+                class="p-4 border border-black w-100 rounded-lg bg-slate-400 w-60"
+            >
+                <div class="text-2xl text-center">
+                    {capitalize(w.description)}
+                </div>
                 <img
                     src="http://openweathermap.org/img/wn/{w.icon}@4x.png"
                     alt=""
@@ -40,11 +42,14 @@
     </div>
     <div>
         <div class="p-4">
+            Rotating arrow here
+            <!--
             <Fa
                 icon={faArrowDownLong}
                 rotate={weatherInfo.wind.deg}
                 scale="3x"
             />
+            -->
         </div>
         <div>
             Szélirány: {getWindDirStr(weatherInfo.wind.deg)} ({weatherInfo.wind
