@@ -1,7 +1,32 @@
 <script lang="ts">
     import type { PageData } from "./$types";
+    import FasArrowUpLong from "~icons/fa6-solid/arrow-up-long";
     export let data: PageData;
-    let weatherInfo = data.weatherInfo;
+    $: weatherInfo = data.weatherInfo;
+    $: forecastInfo = data.forecastInfo;
+
+    $: forecasts = forecastInfo.list.map((x) => ({
+        date: new Date(x.dt_txt + "Z"),
+        temp: x.main.temp,
+        desc: x.weather[0].description,
+        icon: x.weather[0].icon,
+    }));
+
+    const months = [
+        "Jan",
+        "Feb",
+        "Márc",
+        "Ápr",
+        "Máj",
+        "Jún",
+        "Júl",
+        "Aug",
+        "Szept",
+        "Okt",
+        "Nov",
+        "Dec",
+    ];
+
     function capitalize(str: string) {
         str = str.toLowerCase();
         return str.charAt(0).toUpperCase() + str.slice(1);
@@ -42,14 +67,9 @@
     </div>
     <div>
         <div class="p-4">
-            Rotating arrow here
-            <!--
-            <Fa
-                icon={faArrowDownLong}
-                rotate={weatherInfo.wind.deg}
-                scale="3x"
+            <FasArrowUpLong
+                style={`rotate: ${weatherInfo.wind.deg}deg`}
             />
-            -->
         </div>
         <div>
             Szélirány: {getWindDirStr(weatherInfo.wind.deg)} ({weatherInfo.wind
@@ -57,5 +77,30 @@
         </div>
         <div>Szél sebesség: {weatherInfo.wind.speed} m/s</div>
     </div>
+    <div class="mt-8">
+        <div>5 napos előrejelzés</div>
+        <div class="flex overflow-scroll gap-2">
+            {#each forecasts as forecast}
+                <div
+                    class="border-black border-2 h-80 w-40 flex-shrink-0 flex flex-col items-center rounded-lg bg-blue-300"
+                >
+                    <img
+                        src="http://openweathermap.org/img/wn/{forecast.icon}@4x.png"
+                        alt=""
+                    />
+                    <div>{capitalize(forecast.desc)}</div>
+                    <div>
+                        {months[forecast.date.getMonth()]}
+                        {forecast.date.getDay()}.
+                    </div>
+                    <div>
+                        {forecast.date.getHours()}:00
+                    </div>
+                    <div>{forecast.temp} °C</div>
+                </div>
+            {/each}
+        </div>
+    </div>
 </div>
+<pre class="text-[8px]">{JSON.stringify(forecastInfo, null, 2)}</pre>
 <pre class="text-[8px]">{JSON.stringify(weatherInfo, null, 2)}</pre>
