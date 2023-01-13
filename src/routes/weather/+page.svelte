@@ -59,7 +59,7 @@
                     {capitalize(w.description)}
                 </div>
                 <img
-                    src="http://openweathermap.org/img/wn/{w.icon}@4x.png"
+                    src="https://openweathermap.org/img/wn/{w.icon}@4x.png"
                     alt=""
                 />
             </div>
@@ -83,7 +83,7 @@
                     class="border-black border-2 h-80 w-40 flex-shrink-0 flex flex-col items-center rounded-lg bg-blue-300"
                 >
                     <img
-                        src="http://openweathermap.org/img/wn/{forecast.icon}@4x.png"
+                        src="https://openweathermap.org/img/wn/{forecast.icon}@4x.png"
                         alt=""
                     />
                     <div>{capitalize(forecast.desc)}</div>
