@@ -100,5 +100,3 @@
         </div>
     </div>
 </div>
-<pre class="text-[8px]">{JSON.stringify(forecastInfo, null, 2)}</pre>
-<pre class="text-[8px]">{JSON.stringify(weatherInfo, null, 2)}</pre>
