@@ -77,7 +77,7 @@
     </div>
     <div class="mt-8">
         <div>5 napos előrejelzés</div>
-        <div class="flex overflow-scroll gap-2">
+        <div class="flex overflow-x-scroll gap-2">
             {#each forecasts as forecast}
                 <div
                     class="border-black border-2 h-80 w-40 flex-shrink-0 flex flex-col items-center rounded-lg bg-blue-300"
