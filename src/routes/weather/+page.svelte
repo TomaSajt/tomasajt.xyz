@@ -67,9 +67,7 @@
     </div>
     <div>
         <div class="p-4">
-            <FasArrowUpLong
-                style={`rotate: ${weatherInfo.wind.deg}deg`}
-            />
+            <FasArrowUpLong style={`rotate: ${weatherInfo.wind.deg}deg`} />
         </div>
         <div>
             Szélirány: {getWindDirStr(weatherInfo.wind.deg)} ({weatherInfo.wind
@@ -91,7 +89,7 @@
                     <div>{capitalize(forecast.desc)}</div>
                     <div>
                         {months[forecast.date.getMonth()]}
-                        {forecast.date.getDay()}.
+                        {forecast.date.getDate()}.
                     </div>
                     <div>
                         {forecast.date.getHours()}:00
