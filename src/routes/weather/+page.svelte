@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PageData } from "./$types";
-    import FasArrowUpLong from "~icons/fa6-solid/arrow-up-long";
+    import FasArrowDownLong from "~icons/fa6-solid/arrow-down-long";
     export let data: PageData;
     $: weatherInfo = data.weatherInfo;
     $: forecastInfo = data.forecastInfo;
@@ -67,7 +67,7 @@
     </div>
     <div>
         <div class="p-4">
-            <FasArrowUpLong style={`rotate: ${weatherInfo.wind.deg}deg`} />
+            <FasArrowDownLong style={`rotate: ${weatherInfo.wind.deg}deg`} />
         </div>
         <div>
             Szélirány: {getWindDirStr(weatherInfo.wind.deg)} ({weatherInfo.wind
